@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, exceptions
+from datetime import timedelta
 
 
 class Course(models.Model):
@@ -44,6 +45,8 @@ class Session(models.Model):
     name = fields.Char(required=True)
     start_date = fields.Date(default=fields.Date.today)
     duration = fields.Float(digits=(6, 2), help="Duration in days")
+    end_date = fields.Date(string="End Date", store=True,
+                           compute='_get_end_date', inverse='_set_end_date')
     seats = fields.Integer(string="Number of seats")
 
     instructor_id = fields.Many2one('res.partner', string="Instructor",
@@ -52,8 +55,16 @@ class Session(models.Model):
     course_id = fields.Many2one('openacademy.course',
                                 ondelete='cascade', string="Course", required=True)
     attendee_ids = fields.Many2many('res.partner', string="Attendees")
+    attendees_count = fields.Integer(
+        string="Attendees count", compute='_get_attendees_count', store=True)
     taken_seats = fields.Float(string="Taken seats", compute='_taken_seats')
     active = fields.Boolean(default=True)
+    color = fields.Integer()
+
+    @api.depends('attendee_ids')
+    def _get_attendees_count(self):
+        for r in self:
+            r.attendees_count = len(r.attendee_ids)
 
     @api.depends('seats', 'attendee_ids')
     def _taken_seats(self):
@@ -85,3 +96,24 @@ class Session(models.Model):
         for r in self:
             if r.instructor_id and r.instructor_id in r.attendee_ids:
                 raise exceptions.ValidationError("A session's instructor can't be an attendee")
+
+    @api.depends('start_date', 'duration')
+    def _get_end_date(self):
+        for r in self:
+            if not (r.start_date and r.duration):
+                r.end_date = r.start_date
+                continue
+
+            # Add duration to start_date, but: Monday + 5 days = Saturday, so
+            # subtract one second to get on Friday instead
+            duration = timedelta(days=r.duration, seconds=-1)
+            r.end_date = r.start_date + duration
+
+    def _set_end_date(self):
+        for r in self:
+            if not (r.start_date and r.end_date):
+                continue
+
+            # Compute the difference between dates, but: Friday - Monday = 4 days,
+            # so add one day to get 5 days instead
+            r.duration = (r.end_date - r.start_date).days + 1
