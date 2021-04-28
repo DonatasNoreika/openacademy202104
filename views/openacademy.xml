@@ -113,6 +113,7 @@
             <field name="arch" type="xml">
                 <form string="Session Form">
                     <header>
+                        <button name="send_session_report" string="Send info to Instructor" type="object" class="oe_highlight" confirm="Send Session info to Instructor?"/>
                         <field name="status" widget="statusbar" options="{'clickable': '1'}"/>
                     </header>
                     <sheet>

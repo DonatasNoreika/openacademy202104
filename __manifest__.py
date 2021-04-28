@@ -21,7 +21,7 @@
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base', 'board'],
+    'depends': ['base', 'board', 'mail'],
 
     # always loaded
     'data': [
@@ -31,6 +31,7 @@
         'views/inherited_partner_view.xml',
         'reports/session_report.xml',
         'views/session_board.xml',
+        'mail_templates.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
