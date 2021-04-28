@@ -14,6 +14,7 @@ class Course(models.Model):
     session_ids = fields.One2many(
         'openacademy.session', 'course_id', string="Sessions")
     image = fields.Binary("Image", attachment=True)
+    document_ids = fields.One2many('openacademy.document', 'course_id', string='Documents')
 
     def copy(self, default=None):
         default = dict(default or {})
@@ -38,6 +39,14 @@ class Course(models.Model):
          "The course title must be unique"),
     ]
 
+class SessionDocument(models.Model):
+    _name = 'openacademy.document'
+
+    name = fields.Char(string='Filename')
+    file = fields.Binary(string=_('File'), attachment=True)
+    comment = fields.Text(string=_('Notes'))
+
+    course_id = fields.Many2one('openacademy.course')
 
 class Session(models.Model):
     _name = 'openacademy.session'
