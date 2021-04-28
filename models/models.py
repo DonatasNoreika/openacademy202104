@@ -39,7 +39,7 @@ class Course(models.Model):
          "The course title must be unique"),
     ]
 
-class SessionDocument(models.Model):
+class CourseDocument(models.Model):
     _name = 'openacademy.document'
 
     name = fields.Char(string='Filename')
