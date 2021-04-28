@@ -13,6 +13,7 @@ class Course(models.Model):
         ondelete='set null', string="Responsible", index=True)
     session_ids = fields.One2many(
         'openacademy.session', 'course_id', string="Sessions")
+    image = fields.Binary("Image", attachment=True)
 
     def copy(self, default=None):
         default = dict(default or {})

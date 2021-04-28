@@ -8,6 +8,7 @@
             <field name="arch" type="xml">
                 <form string="Course Form">
                     <sheet>
+                        <field name="image" widget="image"/>
                         <group>
                             <field name="name"/>
                             <field name="responsible_id"/>
